@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Responsive Dimensions - Landscape -->
+    
+    <!-- Padding and Margins - Reduced for landscape -->
+    <dimen name="responsive_padding">16dp</dimen>
+    <dimen name="section_margin">12dp</dimen>
+    <dimen name="card_padding">16dp</dimen>
+    <dimen name="summary_section_padding">8dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_clearance">80dp</dimen>
+    <dimen name="empty_state_padding">24dp</dimen>
+    
+    <!-- Header - Slightly smaller for landscape -->
+    <dimen name="header_button_size">44dp</dimen>
+    <dimen name="header_title_size">18sp</dimen>
+    <dimen name="logo_size">28dp</dimen>
+    
+    <!-- Text Sizes - Optimized for landscape -->
+    <dimen name="month_text_size">14sp</dimen>
+    <dimen name="label_text_size">11sp</dimen>
+    <dimen name="amount_text_size">24sp</dimen>
+    <dimen name="empty_state_text_size">14sp</dimen>
+    
+    <!-- Card Properties -->
+    <dimen name="card_corner_radius">12dp</dimen>
+    
+    <!-- Empty State - Smaller for landscape -->
+    <dimen name="empty_state_icon_size">80dp</dimen>
+    <dimen name="empty_state_icon_radius">40dp</dimen>
+    <dimen name="empty_state_inner_icon_size">40dp</dimen>
+    <dimen name="empty_state_icon_margin">16dp</dimen>
+    <dimen name="empty_state_text_margin">20dp</dimen>
+    <dimen name="empty_state_text_max_width">250dp</dimen>
+    
+</resources>

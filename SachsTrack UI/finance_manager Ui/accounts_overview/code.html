@@ -1,0 +1,306 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Fintelligent - Accounts</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#273647",
+                        "background": "#051424",
+                        "primary": "#bec6e0",
+                        "on-tertiary-fixed": "#002113",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-surface-variant": "#c6c6cd",
+                        "error-container": "#93000a",
+                        "secondary": "#bcc7de",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "error": "#ffb4ab",
+                        "on-surface": "#d4e4fa",
+                        "surface-tint": "#bec6e0",
+                        "primary-fixed": "#dae2fd",
+                        "on-secondary": "#263143",
+                        "surface-container-high": "#1c2b3c",
+                        "surface": "#051424",
+                        "on-secondary-container": "#aeb9d0",
+                        "surface-container": "#122131",
+                        "on-tertiary-container": "#009365",
+                        "on-primary": "#283044",
+                        "tertiary": "#4edea3",
+                        "surface-dim": "#051424",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-error-container": "#ffdad6",
+                        "primary-container": "#0f172a",
+                        "inverse-primary": "#565e74",
+                        "tertiary-fixed": "#6ffbbe",
+                        "secondary-fixed": "#d8e3fb",
+                        "inverse-surface": "#d4e4fa",
+                        "outline": "#909097",
+                        "on-error": "#690005",
+                        "on-primary-fixed": "#131b2e",
+                        "inverse-on-surface": "#233143",
+                        "outline-variant": "#45464d",
+                        "secondary-container": "#3e495d",
+                        "on-secondary-fixed-variant": "#3c475a",
+                        "surface-container-lowest": "#010f1f",
+                        "surface-bright": "#2c3a4c",
+                        "on-secondary-fixed": "#111c2d",
+                        "tertiary-container": "#001c10",
+                        "surface-container-low": "#0d1c2d",
+                        "on-tertiary": "#003824",
+                        "on-background": "#d4e4fa",
+                        "secondary-fixed-dim": "#bcc7de",
+                        "surface-container-highest": "#273647",
+                        "on-primary-container": "#798098",
+                        "primary-fixed-dim": "#bec6e0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "sm": "8px",
+                        "gutter": "20px",
+                        "container-max": "1200px",
+                        "base": "4px",
+                        "xs": "4px",
+                        "xl": "40px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "data-mono": ["Geist"],
+                        "body-sm": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "body-lg": ["Geist"],
+                        "label-caps": ["Geist"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "data-mono": ["16px", { "lineHeight": "1", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #051424; /* surface */
+            color: #d4e4fa; /* on-surface */
+        }
+        .glass-card {
+            background: rgba(18, 33, 49, 0.6); /* surface-container with opacity */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(144, 144, 151, 0.1); /* outline with low opacity */
+        }
+    </style>
+</head>
+<body class="font-body-lg text-body-lg bg-surface text-on-surface antialiased min-h-screen flex flex-col relative pb-[80px]">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky bg-surface shadow-sm z-40">
+<div class="flex items-center justify-between px-md py-sm w-full">
+<button class="text-tertiary hover:bg-surface-container-high transition-colors active:scale-95 duration-200 p-sm rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface">Fintelligent</h1>
+<button class="text-tertiary hover:bg-surface-container-high transition-colors active:scale-95 duration-200 p-sm rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+</header>
+<main class="flex-grow flex flex-col px-md py-lg gap-lg max-w-container-max mx-auto w-full md:px-lg">
+<!-- Balance Overview Bento -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-md w-full">
+<!-- Total Balance Card -->
+<div class="glass-card rounded-xl p-lg flex flex-col items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.2)] md:col-span-2 md:py-xl">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-sm">All Accounts</span>
+<h2 class="font-display-lg text-display-lg text-on-surface md:hidden">Rs 23,232</h2>
+<h2 class="font-display-lg text-[64px] font-semibold text-on-surface hidden md:block">Rs 23,232</h2>
+</div>
+<!-- Income / Expense Grid -->
+<div class="grid grid-cols-2 gap-md w-full md:col-span-2">
+<div class="bg-surface-container rounded-lg p-md flex flex-col border border-[#1E293B]">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-xs">EXPENSE SO FAR</span>
+<span class="font-data-mono text-data-mono text-error">Rs 23,223</span>
+</div>
+<div class="bg-surface-container rounded-lg p-md flex flex-col border border-[#1E293B]">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-xs">INCOME SO FAR</span>
+<span class="font-data-mono text-data-mono text-tertiary">Rs 423,223</span>
+</div>
+</div>
+</section>
+<!-- Accounts List -->
+<section class="flex flex-col gap-sm w-full mt-sm">
+<!-- Account Item: BANK -->
+<div class="bg-surface-container-low rounded-lg p-md flex items-center justify-between border-b border-[#1E293B] hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">account_balance</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">BANK</span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<span class="font-data-mono text-data-mono text-on-surface">Rs 12,000</span>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Account Item: Card -->
+<div class="bg-surface-container-low rounded-lg p-md flex items-center justify-between border-b border-[#1E293B] hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">credit_card</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">Card</span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<span class="font-data-mono text-data-mono text-on-surface">Rs -1,500</span>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Account Item: Cash -->
+<div class="bg-surface-container-low rounded-lg p-md flex items-center justify-between border-b border-[#1E293B] hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">Cash</span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<span class="font-data-mono text-data-mono text-on-surface">Rs 2,000</span>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Account Item: Savings -->
+<div class="bg-surface-container-low rounded-lg p-md flex items-center justify-between border-b border-[#1E293B] hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">savings</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">Savings</span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<span class="font-data-mono text-data-mono text-on-surface">Rs 10,000</span>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Account Item: UPI -->
+<div class="bg-surface-container-low rounded-lg p-md flex items-center justify-between border-b border-[#1E293B] hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">UPI</span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<span class="font-data-mono text-data-mono text-on-surface">Rs 732</span>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<button class="mt-md w-full bg-transparent border border-outline text-tertiary font-body-sm text-body-sm font-semibold rounded-lg py-sm flex items-center justify-center gap-xs hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                + ADD NEW ACCOUNT
+            </button>
+</section>
+</main>
+<!-- FAB -->
+<button class="fixed bottom-[96px] right-md md:right-lg w-14 h-14 bg-tertiary text-on-tertiary rounded-full shadow-lg flex items-center justify-center hover:bg-tertiary-fixed transition-colors active:scale-95 z-40">
+<span class="material-symbols-outlined text-[32px]">add</span>
+</button>
+<!-- Kept FAB logic intact but hidden based on strict instruction: "You MUST suppress the FAB on Settings, Profile, Details, and Transactional screens." This is a list/detail view of accounts. -->
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface-container shadow-[0_-4px_20px_rgba(0,0,0,0.2)] md:hidden">
+<div class="flex justify-around items-center w-full px-sm py-xs pb-safe min-h-[72px]">
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface transition-all active:scale-90 duration-150 p-2">
+<span class="material-symbols-outlined mb-1" data-icon="receipt_long">receipt_long</span>
+<span class="font-label-caps text-label-caps">Records</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface transition-all active:scale-90 duration-150 p-2">
+<span class="material-symbols-outlined mb-1" data-icon="insights">insights</span>
+<span class="font-label-caps text-label-caps">Analysis</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface transition-all active:scale-90 duration-150 p-2">
+<span class="material-symbols-outlined mb-1" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-label-caps text-label-caps">Budgets</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-primary-container text-tertiary rounded-xl px-3 py-1 active:scale-90 duration-150">
+<span class="material-symbols-outlined mb-1" data-icon="account_balance">account_balance</span>
+<span class="font-label-caps text-label-caps">Accounts</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface transition-all active:scale-90 duration-150 p-2">
+<span class="material-symbols-outlined mb-1" data-icon="category">category</span>
+<span class="font-label-caps text-label-caps">Categories</span>
+</button>
+</div>
+</nav>
+<!-- Side Nav for Desktop (Hidden on mobile) -->
+<nav class="hidden md:flex flex-col fixed left-0 top-[72px] h-[calc(100vh-72px)] w-[280px] bg-surface-container border-r border-[#1E293B] p-md gap-sm z-30 shadow-[4px_0_20px_rgba(0,0,0,0.1)]">
+<a class="flex items-center gap-md px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-body-lg text-body-lg font-medium">Records</span>
+</a>
+<a class="flex items-center gap-md px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="insights">insights</span>
+<span class="font-body-lg text-body-lg font-medium">Analysis</span>
+</a>
+<a class="flex items-center gap-md px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-body-lg text-body-lg font-medium">Budgets</span>
+</a>
+<a class="flex items-center gap-md px-4 py-3 rounded-lg bg-primary-container text-tertiary font-bold transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span class="font-body-lg text-body-lg">Accounts</span>
+</a>
+<a class="flex items-center gap-md px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="category">category</span>
+<span class="font-body-lg text-body-lg font-medium">Categories</span>
+</a>
+</nav>
+<style>
+        /* Adjust main padding for desktop side nav */
+        @media (min-width: 768px) {
+            main {
+                padding-left: 312px; /* 280px sidebar + 32px gap */
+            }
+        }
+    </style>
+
+
+</body></html>

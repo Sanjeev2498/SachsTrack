@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Navigation Drawer - FinanceFlow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-on-surface": "#233143",
+                      "on-error": "#690005",
+                      "surface-container": "#122131",
+                      "on-primary-fixed": "#131b2e",
+                      "secondary-container": "#3e495d",
+                      "background": "#051424",
+                      "on-tertiary": "#003824",
+                      "on-tertiary-fixed-variant": "#005236",
+                      "outline-variant": "#45464d",
+                      "on-background": "#d4e4fa",
+                      "on-secondary-container": "#aeb9d0",
+                      "on-secondary-fixed": "#111c2d",
+                      "on-primary-container": "#798098",
+                      "primary-fixed": "#dae2fd",
+                      "on-secondary-fixed-variant": "#3c475a",
+                      "surface": "#051424",
+                      "tertiary-fixed": "#6ffbbe",
+                      "surface-container-low": "#0d1c2d",
+                      "surface-container-highest": "#273647",
+                      "on-tertiary-container": "#009365",
+                      "error-container": "#93000a",
+                      "outline": "#909097",
+                      "error": "#ffb4ab",
+                      "on-surface": "#d4e4fa",
+                      "primary-container": "#0f172a",
+                      "on-error-container": "#ffdad6",
+                      "on-tertiary-fixed": "#002113",
+                      "inverse-surface": "#d4e4fa",
+                      "surface-bright": "#2c3a4c",
+                      "secondary": "#bcc7de",
+                      "surface-dim": "#051424",
+                      "surface-tint": "#bec6e0",
+                      "secondary-fixed-dim": "#bcc7de",
+                      "tertiary-container": "#001c10",
+                      "tertiary-fixed-dim": "#4edea3",
+                      "on-primary": "#283044",
+                      "primary": "#bec6e0",
+                      "inverse-primary": "#565e74",
+                      "on-secondary": "#263143",
+                      "surface-container-high": "#1c2b3c",
+                      "surface-variant": "#273647",
+                      "primary-fixed-dim": "#bec6e0",
+                      "surface-container-lowest": "#010f1f",
+                      "secondary-fixed": "#d8e3fb",
+                      "on-surface-variant": "#c6c6cd",
+                      "tertiary": "#4edea3",
+                      "on-primary-fixed-variant": "#3f465c"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter": "20px",
+                      "sm": "8px",
+                      "xs": "4px",
+                      "container-max": "1200px",
+                      "lg": "24px",
+                      "xl": "40px",
+                      "base": "4px",
+                      "md": "16px"
+              },
+              "fontFamily": {
+                      "headline-md": [
+                              "Geist"
+                      ],
+                      "body-sm": [
+                              "Geist"
+                      ],
+                      "headline-lg-mobile": [
+                              "Geist"
+                      ],
+                      "display-lg": [
+                              "Geist"
+                      ],
+                      "label-caps": [
+                              "Geist"
+                      ],
+                      "body-lg": [
+                              "Geist"
+                      ],
+                      "headline-lg": [
+                              "Geist"
+                      ],
+                      "data-mono": [
+                              "Geist"
+                      ]
+              },
+              "fontSize": {
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "data-mono": [
+                              "16px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "500"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        body { font-family: 'Geist', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background h-screen overflow-hidden flex relative font-body-lg text-body-lg">
+<!-- Background Screen Simulation -->
+<div class="absolute inset-0 z-0">
+<iframe class="w-full h-full border-none pointer-events-none opacity-50 grayscale mix-blend-luminosity" src="{{DATA:SCREEN:SCREEN_11}}"></iframe>
+<!-- Fallback if iframe fails -->
+<div class="absolute inset-0 bg-background/80 -z-10"></div>
+</div>
+<!-- Scrim Overlay -->
+<div aria-hidden="true" class="absolute inset-0 bg-background/80 z-10 backdrop-blur-sm transition-opacity"></div>
+<!-- Navigation Drawer -->
+<nav class="relative z-20 w-4/5 max-w-[360px] h-full bg-surface-container-low shadow-[4px_0_24px_rgba(0,0,0,0.5)] flex flex-col transform transition-transform duration-300 ease-in-out border-r border-outline-variant/30">
+<!-- Header -->
+<div class="p-lg flex items-center justify-between border-b border-outline-variant/20">
+<div class="flex items-center gap-md">
+<img alt="FinanceFlow App Logo" class="w-12 h-12 rounded-lg object-cover bg-surface-container-high border border-outline-variant/20 shadow-sm" src="https://lh3.googleusercontent.com/aida/AEtjO1UUjuIooBICuVQrFmRYWKrfGEuRxEPcZrBgnoTDDs63kWsrZwrAUZAWEpC_hzurTy4vSjMKau3nQpavFz7T8MK3Mp6dH28WyzxPiPPekB3diUeZM7jAqC2l3bFZgonI2e3XDOKMHvYunFoVmwi2f84zG6b4-f0LJ-Ivyhv_enfVQ8XqVXRkgozMpx-M-wnpWCigWCmyDX4dflFg7-A1sWXhZZrUkv9Zm-w5ka2Uz48XQEJyn89LfplrXCQ"/>
+<span class="font-headline-md text-headline-md font-semibold tracking-tight text-on-surface">FinanceFlow</span>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant bg-surface-container px-2 py-1 rounded">v1.0.4</span>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto py-md custom-scrollbar">
+<!-- Main List -->
+<ul class="px-md space-y-1 mb-lg">
+<li>
+<button class="w-full flex items-center gap-md px-md py-3 rounded-xl text-on-surface hover:bg-surface-container-high active:bg-surface-variant transition-colors group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-tertiary transition-colors" data-icon="settings">settings</span>
+<span class="font-body-lg text-body-lg font-medium">Preference</span>
+</button>
+</li>
+</ul>
+<!-- Management Section -->
+<div class="px-md mb-lg">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-3 px-md tracking-wider uppercase">Management</h3>
+<ul class="space-y-1">
+<li>
+<button class="w-full flex items-center gap-md px-md py-3 rounded-xl text-on-surface hover:bg-surface-container-high active:bg-surface-variant transition-colors group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-tertiary transition-colors" data-icon="description">description</span>
+<span class="font-body-lg text-body-lg font-medium">Export Report</span>
+</button>
+</li>
+<li>
+<button class="w-full flex items-center gap-md px-md py-3 rounded-xl text-on-surface hover:bg-surface-container-high active:bg-surface-variant transition-colors group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-tertiary transition-colors" data-icon="cloud_sync">cloud_sync</span>
+<span class="font-body-lg text-body-lg font-medium">Backup and Restore</span>
+</button>
+</li>
+<li>
+<button class="w-full flex items-center gap-md px-md py-3 rounded-xl text-error hover:bg-error-container/20 active:bg-error-container/30 transition-colors group">
+<span class="material-symbols-outlined text-error/80 group-hover:text-error transition-colors" data-icon="delete_forever">delete_forever</span>
+<span class="font-body-lg text-body-lg font-medium">Delete and Reset</span>
+</button>
+</li>
+</ul>
+</div>
+<!-- Application Section -->
+<div class="px-md mb-lg">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-3 px-md tracking-wider uppercase">Application</h3>
+<ul class="space-y-1">
+<li>
+<button class="w-full flex items-center gap-md px-md py-3 rounded-xl text-tertiary hover:bg-tertiary/10 active:bg-tertiary/20 transition-colors group bg-tertiary/5 border border-tertiary/20">
+<span class="material-symbols-outlined text-tertiary" data-icon="workspace_premium" data-weight="fill">workspace_premium</span>
+<span class="font-body-lg text-body-lg font-medium">Pro Version</span>
+</button>
+</li>
+<li>
+<button class="w-full flex items-center gap-md px-md py-3 rounded-xl text-on-surface hover:bg-surface-container-high active:bg-surface-variant transition-colors group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-tertiary transition-colors" data-icon="thumb_up">thumb_up</span>
+<span class="font-body-lg text-body-lg font-medium">Like App</span>
+</button>
+</li>
+<li>
+<button class="w-full flex items-center gap-md px-md py-3 rounded-xl text-on-surface hover:bg-surface-container-high active:bg-surface-variant transition-colors group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-tertiary transition-colors" data-icon="help_outline">help_outline</span>
+<span class="font-body-lg text-body-lg font-medium">Help</span>
+</button>
+</li>
+<li>
+<button class="w-full flex items-center gap-md px-md py-3 rounded-xl text-on-surface hover:bg-surface-container-high active:bg-surface-variant transition-colors group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-tertiary transition-colors" data-icon="chat_bubble_outline">chat_bubble_outline</span>
+<span class="font-body-lg text-body-lg font-medium">Feedback</span>
+</button>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+</body></html>

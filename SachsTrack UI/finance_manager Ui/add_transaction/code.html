@@ -1,0 +1,238 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Add Transaction - FinanceFlow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#93000a",
+                        "primary-container": "#0f172a",
+                        "tertiary": "#4edea3",
+                        "surface-container-low": "#0d1c2d",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-secondary-container": "#aeb9d0",
+                        "tertiary-fixed": "#6ffbbe",
+                        "on-surface-variant": "#c6c6cd",
+                        "surface-container": "#122131",
+                        "inverse-primary": "#565e74",
+                        "tertiary-container": "#001c10",
+                        "outline-variant": "#45464d",
+                        "secondary-fixed": "#d8e3fb",
+                        "on-secondary-fixed": "#111c2d",
+                        "on-background": "#d4e4fa",
+                        "on-tertiary": "#003824",
+                        "surface-tint": "#bec6e0",
+                        "on-tertiary-container": "#009365",
+                        "inverse-surface": "#d4e4fa",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "secondary": "#bcc7de",
+                        "surface-dim": "#051424",
+                        "on-primary-container": "#798098",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "background": "#051424",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#2c3a4c",
+                        "on-secondary-fixed-variant": "#3c475a",
+                        "secondary-container": "#3e495d",
+                        "primary-fixed": "#dae2fd",
+                        "on-primary-fixed": "#131b2e",
+                        "on-primary": "#283044",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-container-high": "#1c2b3c",
+                        "on-surface": "#d4e4fa",
+                        "on-error": "#690005",
+                        "surface-container-lowest": "#010f1f",
+                        "primary": "#bec6e0",
+                        "on-tertiary-fixed": "#002113",
+                        "inverse-on-surface": "#233143",
+                        "surface-variant": "#273647",
+                        "surface": "#051424",
+                        "on-secondary": "#263143",
+                        "secondary-fixed-dim": "#bcc7de",
+                        "surface-container-highest": "#273647",
+                        "outline": "#909097"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "md": "16px",
+                        "xs": "4px",
+                        "container-max": "1200px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "gutter": "20px",
+                        "xl": "40px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "body-sm": ["Geist"],
+                        "label-caps": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "data-mono": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "display-lg": ["Geist"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "data-mono": ["16px", { "lineHeight": "1", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+            font-family: 'Geist', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background-color: theme('colors.surface-container');
+        }
+        
+        .calculator-btn {
+            background-color: theme('colors.surface');
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 64px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .calculator-btn:active {
+            background-color: theme('colors.surface-container-highest');
+        }
+        
+        .calculator-btn.operator {
+            background-color: theme('colors.surface-container-low');
+            color: theme('colors.tertiary');
+        }
+        
+        .calculator-btn.operator:active {
+            background-color: theme('colors.surface-container-high');
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col max-w-[600px] mx-auto relative overflow-hidden bg-background">
+<!-- Header -->
+<header class="flex items-center justify-between px-md h-16 w-full shrink-0 z-50">
+<button class="p-2 -ml-2 rounded-full hover:bg-surface-container-high transition-colors active:scale-95 text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined font-headline-md text-headline-md" data-icon="close">close</span>
+</button>
+<span class="font-headline-md text-headline-md text-on-surface font-semibold">New Transaction</span>
+<button class="font-body-sm text-body-sm text-tertiary hover:opacity-80 transition-opacity font-semibold tracking-wide">
+            Save
+        </button>
+</header>
+<!-- Content Area -->
+<main class="flex-1 overflow-y-auto flex flex-col">
+<!-- Segmented Control -->
+<div class="px-md py-sm shrink-0">
+<div class="flex p-1 bg-surface-container-high rounded-lg w-full">
+<button class="flex-1 py-2 font-body-sm text-body-sm text-on-surface-variant rounded text-center transition-colors">
+                    Income
+                </button>
+<button class="flex-1 py-2 font-body-sm text-body-sm bg-surface text-on-surface rounded shadow-sm text-center transition-colors font-medium">
+                    Expenses
+                </button>
+<button class="flex-1 py-2 font-body-sm text-body-sm text-on-surface-variant rounded text-center transition-colors">
+                    Transfer
+                </button>
+</div>
+</div>
+<!-- Amount Display -->
+<div class="px-md py-lg flex flex-col items-end justify-center shrink-0 border-b border-surface-container-high mx-md mb-md">
+<span class="font-display-lg text-display-lg text-on-surface tabular-nums tracking-tight">0.00</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">USD</span>
+</div>
+<!-- Selection Buttons (Account & Category) -->
+<div class="px-md flex gap-md mb-lg shrink-0">
+<button class="flex-1 flex items-center justify-between p-md bg-surface-container rounded-lg border border-outline-variant hover:border-tertiary/50 transition-colors group">
+<div class="flex flex-col items-start">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-1">Account</span>
+<span class="font-body-lg text-body-lg text-on-surface group-hover:text-tertiary transition-colors">Select Account</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="keyboard_arrow_down">keyboard_arrow_down</span>
+</button>
+<button class="flex-1 flex items-center justify-between p-md bg-surface-container rounded-lg border border-outline-variant hover:border-tertiary/50 transition-colors group">
+<div class="flex flex-col items-start">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-1">Category</span>
+<span class="font-body-lg text-body-lg text-on-surface group-hover:text-tertiary transition-colors">Select Category</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="keyboard_arrow_down">keyboard_arrow_down</span>
+</button>
+</div>
+<!-- Note Section -->
+<div class="px-md mb-lg shrink-0">
+<div class="bg-surface-container rounded-lg border border-outline-variant focus-within:border-tertiary transition-colors p-md">
+<label class="sr-only" for="note-input">Note</label>
+<input class="w-full bg-transparent border-none p-0 focus:ring-0 font-body-lg text-body-lg text-on-surface placeholder-on-surface-variant" id="note-input" placeholder="Note" type="text">
+</div>
+</div>
+<!-- Spacer to push calculator down -->
+<div class="flex-1 min-h-[20px]"></div>
+<!-- Calculator Layout -->
+<div class="shrink-0 w-full bg-surface-container-low border-t border-surface-container-high rounded-t-xl overflow-hidden pb-safe">
+<!-- DateTime Footer -->
+
+<div class="calculator-grid w-full select-none">
+<div class="calculator-btn operator font-headline-md text-headline-md">C</div>
+<div class="calculator-btn operator font-headline-md text-headline-md">÷</div>
+<div class="calculator-btn operator font-headline-md text-headline-md">×</div>
+<div class="calculator-btn operator font-headline-md text-headline-md"><span class="material-symbols-outlined" data-icon="backspace">backspace</span></div>
+<div class="calculator-btn font-headline-lg-mobile text-headline-lg-mobile font-medium">7</div>
+<div class="calculator-btn font-headline-lg-mobile text-headline-lg-mobile font-medium">8</div>
+<div class="calculator-btn font-headline-lg-mobile text-headline-lg-mobile font-medium">9</div>
+<div class="calculator-btn operator font-headline-md text-headline-md">-</div>
+<div class="calculator-btn font-headline-lg-mobile text-headline-lg-mobile font-medium">4</div>
+<div class="calculator-btn font-headline-lg-mobile text-headline-lg-mobile font-medium">5</div>
+<div class="calculator-btn font-headline-lg-mobile text-headline-lg-mobile font-medium">6</div>
+<div class="calculator-btn operator font-headline-md text-headline-md">+</div>
+<div class="calculator-btn font-headline-lg-mobile text-headline-lg-mobile font-medium">1</div>
+<div class="calculator-btn font-headline-lg-mobile text-headline-lg-mobile font-medium">2</div>
+<div class="calculator-btn font-headline-lg-mobile text-headline-lg-mobile font-medium">3</div>
+<div class="calculator-btn operator font-headline-md text-headline-md row-span-2 bg-tertiary/10 hover:bg-tertiary/20 text-tertiary">=</div>
+<div class="calculator-btn font-headline-lg-mobile text-headline-lg-mobile font-medium col-span-2">0</div>
+<div class="calculator-btn font-headline-lg-mobile text-headline-lg-mobile font-medium">.</div>
+</div>
+</div>
+</main>
+
+
+<div class="flex justify-between items-center p-md border-t border-surface-container bg-surface-container-low w-full shrink-0 pb-safe">
+<button class="flex items-center gap-sm text-on-surface-variant hover:text-on-surface transition-colors">
+
+<span class="font-data-mono text-data-mono">Sep 02, 2026</span>
+</button>
+<button class="flex items-center gap-sm text-on-surface-variant hover:text-on-surface transition-colors">
+
+<span class="font-data-mono text-data-mono">11:30 AM</span>
+</button>
+</div></body></html>
