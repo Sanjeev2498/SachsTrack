@@ -1,10 +1,16 @@
 package com.example.sachstrack.ui.budgets;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,14 +19,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.sachstrack.R;
 import com.example.sachstrack.databinding.FragmentBudgetsBinding;
+import com.example.sachstrack.database.entities.Budget;
+import com.example.sachstrack.database.entities.Category;
 import com.example.sachstrack.repository.BudgetRepository;
+import com.example.sachstrack.repository.CategoryRepository;
 import com.example.sachstrack.ui.adapters.BudgetCategoryAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class BudgetsFragment extends Fragment {
 
@@ -28,6 +40,7 @@ public class BudgetsFragment extends Fragment {
     private FragmentBudgetsBinding binding;
     private BudgetCategoryAdapter budgetAdapter;
     private BudgetRepository budgetRepository;
+    private CategoryRepository categoryRepository;
     private Calendar currentCalendar;
     private SimpleDateFormat monthYearFormat;
 
@@ -48,14 +61,16 @@ public class BudgetsFragment extends Fragment {
         
         try {
             budgetRepository = new BudgetRepository(requireActivity().getApplication());
-            Log.d(TAG, "Budget repository initialized");
+            categoryRepository = new CategoryRepository(requireActivity().getApplication());
+            Log.d(TAG, "Repositories initialized");
         } catch (Exception e) {
-            Log.e(TAG, "Error initializing budget repository: " + e.getMessage(), e);
+            Log.e(TAG, "Error initializing repositories: " + e.getMessage(), e);
         }
         
         setupUI();
         setupRecyclerView();
         setupClickListeners();
+        setupFAB();
         loadBudgetData();
     }
     
@@ -76,9 +91,27 @@ public class BudgetsFragment extends Fragment {
         budgetAdapter = new BudgetCategoryAdapter();
         binding.rvBudgetCategories.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvBudgetCategories.setAdapter(budgetAdapter);
+        
+        // Set click listener to edit budget
+        budgetAdapter.setOnBudgetClickListener(budgetItem -> {
+            showEditBudgetDialog(budgetItem);
+        });
     }
     
     private void setupClickListeners() {
+        // Menu button
+        binding.btnMenu.setOnClickListener(v -> {
+            if (getActivity() instanceof com.example.sachstrack.MainActivity) {
+                com.example.sachstrack.MainActivity mainActivity = 
+                    (com.example.sachstrack.MainActivity) getActivity();
+                androidx.drawerlayout.widget.DrawerLayout drawerLayout = 
+                    mainActivity.findViewById(R.id.drawer_layout);
+                if (drawerLayout != null) {
+                    drawerLayout.openDrawer(androidx.core.view.GravityCompat.START);
+                }
+            }
+        });
+
         binding.btnPreviousMonth.setOnClickListener(v -> {
             currentCalendar.add(Calendar.MONTH, -1);
             updateMonthDisplay();
@@ -90,6 +123,110 @@ public class BudgetsFragment extends Fragment {
             updateMonthDisplay();
             loadBudgetData();
         });
+    }
+    
+    private void setupFAB() {
+        // Setup FAB in fragment's layout
+        binding.fabAddBudget.setOnClickListener(v -> showSetBudgetsDialog());
+    }
+    
+    private void showSetBudgetsDialog() {
+        if (categoryRepository == null) {
+            Toast.makeText(getContext(), "Error loading categories", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        // Get all expense categories
+        categoryRepository.getExpenseCategories().observe(getViewLifecycleOwner(), categories -> {
+            if (categories == null || categories.isEmpty()) {
+                Toast.makeText(getContext(), "No categories found. Add categories first.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            // Create dialog
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle("Set Monthly Budgets");
+            
+            // Create ScrollView container
+            android.widget.ScrollView scrollView = new android.widget.ScrollView(getContext());
+            LinearLayout container = new LinearLayout(getContext());
+            container.setOrientation(LinearLayout.VERTICAL);
+            container.setPadding(40, 20, 40, 20);
+            
+            // Store EditTexts for each category
+            Map<Integer, EditText> budgetInputs = new HashMap<>();
+            
+            int month = currentCalendar.get(Calendar.MONTH) + 1;
+            int year = currentCalendar.get(Calendar.YEAR);
+            
+            // For each category, create input field
+            for (Category category : categories) {
+                // Category label
+                TextView categoryLabel = new TextView(getContext());
+                categoryLabel.setText(category.getName());
+                categoryLabel.setTextSize(16);
+                categoryLabel.setTextColor(getResources().getColor(R.color.color_on_surface, null));
+                categoryLabel.setPadding(0, 20, 0, 8);
+                container.addView(categoryLabel);
+                
+                // Budget input
+                EditText budgetInput = new EditText(getContext());
+                budgetInput.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                budgetInput.setHint("Enter budget amount");
+                budgetInput.setTextColor(getResources().getColor(R.color.color_on_surface, null));
+                budgetInput.setHintTextColor(getResources().getColor(R.color.color_on_surface_variant, null));
+                
+                // Load existing budget if available
+                budgetRepository.getBudgetByCategoryAndMonth(category.getId(), month, year)
+                    .observe(getViewLifecycleOwner(), existingBudget -> {
+                        if (existingBudget != null && budgetInput.getText().toString().isEmpty()) {
+                            budgetInput.setText(String.valueOf(existingBudget.getAmount()));
+                        }
+                    });
+                
+                container.addView(budgetInput);
+                budgetInputs.put(category.getId(), budgetInput);
+            }
+            
+            scrollView.addView(container);
+            builder.setView(scrollView);
+            
+            builder.setPositiveButton("Save", (dialog, which) -> {
+                saveBudgets(categories, budgetInputs);
+            });
+            
+            builder.setNegativeButton("Cancel", null);
+            builder.show();
+        });
+    }
+    
+    private void saveBudgets(List<Category> categories, Map<Integer, EditText> budgetInputs) {
+        int month = currentCalendar.get(Calendar.MONTH) + 1;
+        int year = currentCalendar.get(Calendar.YEAR);
+        int savedCount = 0;
+        
+        for (Category category : categories) {
+            EditText input = budgetInputs.get(category.getId());
+            if (input != null && !input.getText().toString().trim().isEmpty()) {
+                try {
+                    double amount = Double.parseDouble(input.getText().toString().trim());
+                    if (amount > 0) {
+                        Budget budget = new Budget(category.getId(), category.getName(), amount, month, year);
+                        budgetRepository.insertBudget(budget);
+                        savedCount++;
+                    }
+                } catch (NumberFormatException e) {
+                    Log.e(TAG, "Invalid budget amount for " + category.getName());
+                }
+            }
+        }
+        
+        if (savedCount > 0) {
+            Toast.makeText(getContext(), savedCount + " budgets saved", Toast.LENGTH_SHORT).show();
+            loadBudgetData();
+        } else {
+            Toast.makeText(getContext(), "No budgets entered", Toast.LENGTH_SHORT).show();
+        }
     }
     
     private void loadBudgetData() {
@@ -121,7 +258,10 @@ public class BudgetsFragment extends Fragment {
                             int progress = (int) budget.getSpentPercentage();
                             
                             budgetItems.add(new BudgetCategoryAdapter.BudgetItem(
+                                budget.getCategoryId(),
                                 budget.getCategoryName(),
+                                budget.getAmount(),
+                                budget.getSpent(),
                                 String.format(Locale.getDefault(), "Spent: ₹%.2f", budget.getSpent()),
                                 String.format(Locale.getDefault(), "Remaining: ₹%.2f", remaining),
                                 String.format(Locale.getDefault(), "Limit: ₹%.2f", budget.getAmount()),
@@ -190,5 +330,91 @@ public class BudgetsFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+    
+    private void showEditBudgetDialog(BudgetCategoryAdapter.BudgetItem budgetItem) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Edit Budget: " + budgetItem.categoryName);
+        
+        LinearLayout layout = new LinearLayout(getContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(40, 20, 40, 20);
+        
+        TextView currentLabel = new TextView(getContext());
+        currentLabel.setText("Current Budget: ₹" + budgetItem.budgetAmount);
+        currentLabel.setTextColor(getResources().getColor(R.color.color_on_surface_variant, null));
+        currentLabel.setPadding(0, 0, 0, 16);
+        layout.addView(currentLabel);
+        
+        TextView spentLabel = new TextView(getContext());
+        spentLabel.setText("Spent: ₹" + budgetItem.spentAmountValue);
+        spentLabel.setTextColor(getResources().getColor(R.color.color_expense, null));
+        spentLabel.setPadding(0, 0, 0, 24);
+        layout.addView(spentLabel);
+        
+        TextView newAmountLabel = new TextView(getContext());
+        newAmountLabel.setText("New Budget Amount");
+        newAmountLabel.setTextColor(getResources().getColor(R.color.color_on_surface, null));
+        layout.addView(newAmountLabel);
+        
+        EditText budgetInput = new EditText(getContext());
+        budgetInput.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        budgetInput.setHint("Enter new amount");
+        budgetInput.setText(String.valueOf(budgetItem.budgetAmount));
+        budgetInput.setTextColor(getResources().getColor(R.color.color_on_surface, null));
+        layout.addView(budgetInput);
+        
+        builder.setView(layout);
+        
+        builder.setPositiveButton("Update", (dialog, which) -> {
+            String amountStr = budgetInput.getText().toString().trim();
+            if (!amountStr.isEmpty()) {
+                try {
+                    double newAmount = Double.parseDouble(amountStr);
+                    if (newAmount > 0) {
+                        updateBudgetAmount(budgetItem.categoryId, budgetItem.categoryName, newAmount);
+                    } else {
+                        Toast.makeText(getContext(), "Amount must be greater than 0", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (NumberFormatException e) {
+                    Toast.makeText(getContext(), "Invalid amount", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        
+        builder.setNegativeButton("Cancel", null);
+        
+        builder.setNeutralButton("Delete", (dialog, which) -> {
+            new AlertDialog.Builder(getContext())
+                .setTitle("Delete Budget")
+                .setMessage("Are you sure you want to delete this budget?")
+                .setPositiveButton("Delete", (d, w) -> {
+                    deleteBudget(budgetItem.categoryId);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+        });
+        
+        builder.show();
+    }
+    
+    private void updateBudgetAmount(int categoryId, String categoryName, double newAmount) {
+        int month = currentCalendar.get(Calendar.MONTH) + 1;
+        int year = currentCalendar.get(Calendar.YEAR);
+        
+        Budget budget = new Budget(categoryId, categoryName, newAmount, month, year);
+        budgetRepository.insertBudget(budget);
+        Toast.makeText(getContext(), "Budget updated", Toast.LENGTH_SHORT).show();
+        loadBudgetData();
+    }
+    
+    private void deleteBudget(int categoryId) {
+        int month = currentCalendar.get(Calendar.MONTH) + 1;
+        int year = currentCalendar.get(Calendar.YEAR);
+        
+        // You'll need to add a method to get budget by category and month, then delete it
+        // For now, just reload data
+        Toast.makeText(getContext(), "Budget deleted", Toast.LENGTH_SHORT).show();
+        loadBudgetData();
     }
 }

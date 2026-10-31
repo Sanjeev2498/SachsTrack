@@ -1,14 +1,17 @@
 package com.example.sachstrack.ui.categories;
 
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.Spinner;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,232 +20,313 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.sachstrack.R;
-import com.example.sachstrack.databinding.FragmentCategoriesNewBinding;
-import com.example.sachstrack.model.CategoryItem;
-import com.example.sachstrack.ui.adapters.CategoryItemAdapter;
-import com.example.sachstrack.ui.addtransaction.AddTransactionActivity;
+import com.example.sachstrack.MainActivity;
+import com.example.sachstrack.databinding.FragmentCategoriesBinding;
+import com.example.sachstrack.database.entities.Category;
+import com.example.sachstrack.repository.AccountRepository;
+import com.example.sachstrack.repository.CategoryRepository;
+import com.example.sachstrack.ui.adapters.SimpleCategoryAdapter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
-public class CategoriesFragment extends Fragment implements CategoryItemAdapter.OnCategoryClickListener {
+public class CategoriesFragment extends Fragment {
 
-    private FragmentCategoriesNewBinding binding;
-    private CategoryItemAdapter adapter;
-    private List<CategoryItem> allCategories;
+    private static final String TAG = "CategoriesFragment";
+    private FragmentCategoriesBinding binding;
+    private SimpleCategoryAdapter categoryAdapter;
+    private CategoryRepository categoryRepository;
+    private AccountRepository accountRepository;
+    private String currentFilter = "all";
+    private List<Category> allCategories = new ArrayList<>();
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentCategoriesNewBinding.inflate(inflater, container, false);
+        binding = FragmentCategoriesBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        initializeRepositories();
         setupRecyclerView();
         setupClickListeners();
-        loadSampleData();
-        updateUI();
+        loadData();
+    }
+
+    private void initializeRepositories() {
+        try {
+            categoryRepository = new CategoryRepository(requireActivity().getApplication());
+            accountRepository = new AccountRepository(requireActivity().getApplication());
+            Log.d(TAG, "Repositories initialized");
+        } catch (Exception e) {
+            Log.e(TAG, "Error initializing repositories: " + e.getMessage(), e);
+        }
     }
 
     private void setupRecyclerView() {
-        adapter = new CategoryItemAdapter();
-        adapter.setOnCategoryClickListener(this);
+        categoryAdapter = new SimpleCategoryAdapter();
         binding.rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.rvCategories.setAdapter(adapter);
+        binding.rvCategories.setAdapter(categoryAdapter);
+        categoryAdapter.setOnCategoryClickListener(category -> showCategoryOptionsDialog(category));
     }
 
     private void setupClickListeners() {
         // Menu button
         binding.btnMenu.setOnClickListener(v -> {
-            // Open navigation drawer
-            if (getActivity() instanceof com.example.sachstrack.MainActivity) {
-                com.example.sachstrack.MainActivity mainActivity = 
-                    (com.example.sachstrack.MainActivity) getActivity();
-                if (mainActivity != null) {
-                    androidx.drawerlayout.widget.DrawerLayout drawerLayout = 
-                        mainActivity.findViewById(com.example.sachstrack.R.id.drawer_layout);
-                    if (drawerLayout != null) {
-                        drawerLayout.openDrawer(androidx.core.view.GravityCompat.START);
-                    }
+            if (getActivity() instanceof MainActivity) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                androidx.drawerlayout.widget.DrawerLayout drawerLayout = 
+                    mainActivity.findViewById(R.id.drawer_layout);
+                if (drawerLayout != null) {
+                    drawerLayout.openDrawer(androidx.core.view.GravityCompat.START);
                 }
             }
         });
 
-        // Search button
-        binding.btnSearch.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Search functionality coming soon", Toast.LENGTH_SHORT).show();
-        });
+        // Filter chips
+        binding.chipAll.setOnClickListener(v -> { currentFilter = "all"; filterCategories(); });
+        binding.chipExpense.setOnClickListener(v -> { currentFilter = "expense"; filterCategories(); });
+        binding.chipIncome.setOnClickListener(v -> { currentFilter = "income"; filterCategories(); });
+        binding.fabAddCategory.setOnClickListener(v -> showAddCategoryDialog());
+    }
 
-        // Add Category button
-        binding.btnAddCategory.setOnClickListener(v -> {
-            showAddCategoryDialog();
-        });
+    private void loadData() {
+        loadAccountsTotal();
+        loadCategories();
+    }
 
-        // FAB Add Transaction
-        binding.fabAddTransaction.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), AddTransactionActivity.class);
-            startActivity(intent);
+    private void loadAccountsTotal() {
+        if (accountRepository == null) return;
+        accountRepository.getAllActiveAccounts().observe(getViewLifecycleOwner(), accounts -> {
+            if (accounts != null) {
+                double total = 0.0;
+                for (com.example.sachstrack.database.entities.Account account : accounts) {
+                    total += account.getBalance();
+                }
+                binding.tvAllAccountsTotal.setText(String.format(Locale.getDefault(), "₹%.2f", total));
+            } else {
+                binding.tvAllAccountsTotal.setText("₹0.00");
+            }
         });
     }
 
-    private void loadSampleData() {
-        allCategories = new ArrayList<>();
-        
-        // Default expense categories
-        allCategories.add(new CategoryItem("Food & Dining", R.drawable.ic_restaurant_24, "expense"));
-        allCategories.add(new CategoryItem("Transport", R.drawable.ic_directions_car_24, "expense"));
-        allCategories.add(new CategoryItem("Housing", R.drawable.ic_home_24, "expense"));
-        allCategories.add(new CategoryItem("Shopping", R.drawable.ic_shopping_bag_24, "expense"));
-        allCategories.add(new CategoryItem("Entertainment", R.drawable.ic_movie_24, "expense"));
-        
-        // Default income categories
-        allCategories.add(new CategoryItem("Salary", R.drawable.ic_account_balance_wallet_24, "income"));
-        allCategories.add(new CategoryItem("Freelance", R.drawable.ic_work_24, "income"));
-        allCategories.add(new CategoryItem("Investment", R.drawable.ic_trending_up_24, "income"));
-
-        adapter.updateCategories(allCategories);
+    private void loadCategories() {
+        if (categoryRepository == null) return;
+        categoryRepository.getAllActiveCategories().observe(getViewLifecycleOwner(), categories -> {
+            if (categories != null) {
+                allCategories = categories;
+                filterCategories();
+                Log.d(TAG, "Loaded " + categories.size() + " categories");
+            } else {
+                allCategories = new ArrayList<>();
+                categoryAdapter.updateCategories(allCategories);
+            }
+        });
     }
 
-    private void updateUI() {
-        // Calculate totals (sample data)
-        binding.tvTotalBalance.setText("Rs 23,322");
-        binding.tvTotalExpense.setText("Rs 23,223");
+    private void filterCategories() {
+        List<Category> filtered = new ArrayList<>();
+        for (Category category : allCategories) {
+            if (currentFilter.equals("all") || currentFilter.equals(category.getType())) {
+                filtered.add(category);
+            }
+        }
+        categoryAdapter.updateCategories(filtered);
+        Log.d(TAG, "Filtered " + filtered.size() + " categories for: " + currentFilter);
     }
 
     private void showAddCategoryDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_add_category, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Add New Category");
+        LinearLayout layout = new LinearLayout(getContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(40, 20, 40, 20);
+
+        TextView nameLabel = new TextView(getContext());
+        nameLabel.setText("Category Name");
+        nameLabel.setTextColor(getResources().getColor(R.color.color_on_surface, null));
+        layout.addView(nameLabel);
+
+        EditText nameInput = new EditText(getContext());
+        nameInput.setHint("Enter category name");
+        nameInput.setInputType(InputType.TYPE_CLASS_TEXT);
+        nameInput.setTextColor(getResources().getColor(R.color.color_on_surface, null));
+        layout.addView(nameInput);
+
+        TextView typeLabel = new TextView(getContext());
+        typeLabel.setText("Category Type");
+        typeLabel.setTextColor(getResources().getColor(R.color.color_on_surface, null));
+        typeLabel.setPadding(0, 32, 0, 8);
+        layout.addView(typeLabel);
+
+        RadioGroup typeGroup = new RadioGroup(getContext());
+        typeGroup.setOrientation(RadioGroup.HORIZONTAL);
+
+        RadioButton expenseRadio = new RadioButton(getContext());
+        expenseRadio.setText("Expense");
+        expenseRadio.setId(View.generateViewId());
+        expenseRadio.setTextColor(getResources().getColor(R.color.color_on_surface, null));
+        expenseRadio.setChecked(true);
+        typeGroup.addView(expenseRadio);
+
+        RadioButton incomeRadio = new RadioButton(getContext());
+        incomeRadio.setText("Income");
+        incomeRadio.setId(View.generateViewId());
+        incomeRadio.setTextColor(getResources().getColor(R.color.color_on_surface, null));
+        typeGroup.addView(incomeRadio);
+
+        layout.addView(typeGroup);
+
+        // Icon selection
+        TextView iconLabel = new TextView(getContext());
+        iconLabel.setText("Select Icon");
+        iconLabel.setTextColor(getResources().getColor(R.color.color_on_surface, null));
+        iconLabel.setPadding(0, 32, 0, 8);
+        layout.addView(iconLabel);
+
+        final String[] selectedIcon = {"restaurant"}; // Default
+        android.widget.Button iconButton = new android.widget.Button(getContext());
+        iconButton.setText("Choose Icon");
+        iconButton.setOnClickListener(v -> {
+            showIconPickerDialog(selectedIcon, iconButton);
+        });
+        layout.addView(iconButton);
+
+        builder.setView(layout);
+
+        builder.setPositiveButton("Add", (dialog, which) -> {
+            String name = nameInput.getText().toString().trim();
+            if (!name.isEmpty()) {
+                String type = expenseRadio.isChecked() ? "expense" : "income";
+                addCategory(name, type, selectedIcon[0]);
+            } else {
+                Toast.makeText(getContext(), "Please enter a category name", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+
+    private void showIconPickerDialog(String[] selectedIcon, android.widget.Button iconButton) {
+        String[] icons = {
+            "restaurant", "directions_car", "home", "shopping_bag", "movie",
+            "school", "bills", "smartphone", "beauty", "work",
+            "business", "trending_up", "bonus", "freelance"
+        };
         
-        EditText etCategoryName = dialogView.findViewById(R.id.et_category_name);
-        Spinner spinnerType = dialogView.findViewById(R.id.spinner_category_type);
-        Spinner spinnerIcon = dialogView.findViewById(R.id.spinner_category_icon);
+        String[] iconNames = {
+            "Food", "Transport", "Home", "Shopping", "Entertainment",
+            "Education", "Bills", "Phone", "Beauty", "Work",
+            "Business", "Investment", "Bonus", "Freelance"
+        };
 
-        // Setup type spinner
-        ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(requireContext(), 
-            android.R.layout.simple_spinner_item, 
-            new String[]{"Expense", "Income"});
-        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerType.setAdapter(typeAdapter);
-
-        // Setup icon spinner (simplified - using category names)
-        ArrayAdapter<String> iconAdapter = new ArrayAdapter<>(requireContext(), 
-            android.R.layout.simple_spinner_item, 
-            new String[]{"Restaurant", "Car", "Home", "Shopping", "Entertainment", "Work", "Trending Up"});
-        iconAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerIcon.setAdapter(iconAdapter);
-
-        builder.setView(dialogView)
-               .setTitle("Add New Category")
-               .setPositiveButton("Add", (dialog, which) -> {
-                   String categoryName = etCategoryName.getText().toString().trim();
-                   if (!categoryName.isEmpty()) {
-                       String type = spinnerType.getSelectedItem().toString().toLowerCase();
-                       int iconResource = getIconResource(spinnerIcon.getSelectedItemPosition());
-                       
-                       CategoryItem newCategory = new CategoryItem(categoryName, iconResource, type);
-                       allCategories.add(newCategory);
-                       adapter.updateCategories(allCategories);
-                       
-                       Toast.makeText(getContext(), "Category added successfully", Toast.LENGTH_SHORT).show();
-                   } else {
-                       Toast.makeText(getContext(), "Please enter category name", Toast.LENGTH_SHORT).show();
-                   }
-               })
-               .setNegativeButton("Cancel", null)
-               .show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Choose Icon");
+        builder.setItems(iconNames, (dialog, which) -> {
+            selectedIcon[0] = icons[which];
+            iconButton.setText("Icon: " + iconNames[which]);
+        });
+        builder.show();
     }
 
-    private int getIconResource(int position) {
-        switch (position) {
-            case 0: return R.drawable.ic_restaurant_24;
-            case 1: return R.drawable.ic_directions_car_24;
-            case 2: return R.drawable.ic_home_24;
-            case 3: return R.drawable.ic_shopping_bag_24;
-            case 4: return R.drawable.ic_movie_24;
-            case 5: return R.drawable.ic_work_24;
-            case 6: return R.drawable.ic_trending_up_24;
-            default: return R.drawable.ic_category_24;
-        }
+    private void addCategory(String name, String type, String icon) {
+        Category category = new Category();
+        category.setName(name);
+        category.setType(type);
+        category.setIcon(icon);
+        category.setColor(type.equals("expense") ? "#ffb4ab" : "#4edea3");
+        category.setActive(true);
+        categoryRepository.insertCategory(category);
+        Toast.makeText(getContext(), "Category added successfully", Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void onCategoryClick(CategoryItem category, int position) {
-        Toast.makeText(getContext(), "Selected: " + category.getName(), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onCategoryMenuClick(CategoryItem category, int position) {
-        showCategoryOptionsDialog(category, position);
-    }
-
-    private void showCategoryOptionsDialog(CategoryItem category, int position) {
+    private void showCategoryOptionsDialog(Category category) {
         String[] options = {"Edit", "Delete"};
-        
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle(category.getName())
-               .setItems(options, (dialog, which) -> {
-                   switch (which) {
-                       case 0: // Edit
-                           showEditCategoryDialog(category, position);
-                           break;
-                       case 1: // Delete
-                           showDeleteConfirmDialog(category, position);
-                           break;
-                   }
-               })
-               .show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(category.getName());
+        builder.setItems(options, (dialog, which) -> {
+            if (which == 0) showEditCategoryDialog(category);
+            else if (which == 1) showDeleteConfirmDialog(category);
+        });
+        builder.show();
     }
 
-    private void showEditCategoryDialog(CategoryItem category, int position) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_add_category, null);
-        
-        EditText etCategoryName = dialogView.findViewById(R.id.et_category_name);
-        Spinner spinnerType = dialogView.findViewById(R.id.spinner_category_type);
-        
-        etCategoryName.setText(category.getName());
-        
-        ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(requireContext(), 
-            android.R.layout.simple_spinner_item, 
-            new String[]{"Expense", "Income"});
-        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerType.setAdapter(typeAdapter);
-        spinnerType.setSelection("income".equals(category.getType()) ? 1 : 0);
+    private void showEditCategoryDialog(Category category) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Edit Category");
+        LinearLayout layout = new LinearLayout(getContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(40, 20, 40, 20);
 
-        builder.setView(dialogView)
-               .setTitle("Edit Category")
-               .setPositiveButton("Update", (dialog, which) -> {
-                   String newName = etCategoryName.getText().toString().trim();
-                   if (!newName.isEmpty()) {
-                       category.setName(newName);
-                       category.setType(spinnerType.getSelectedItem().toString().toLowerCase());
-                       adapter.notifyItemChanged(position);
-                       Toast.makeText(getContext(), "Category updated", Toast.LENGTH_SHORT).show();
-                   }
-               })
-               .setNegativeButton("Cancel", null)
-               .show();
+        TextView nameLabel = new TextView(getContext());
+        nameLabel.setText("Category Name");
+        nameLabel.setTextColor(getResources().getColor(R.color.color_on_surface, null));
+        layout.addView(nameLabel);
+
+        EditText nameInput = new EditText(getContext());
+        nameInput.setText(category.getName());
+        nameInput.setInputType(InputType.TYPE_CLASS_TEXT);
+        nameInput.setTextColor(getResources().getColor(R.color.color_on_surface, null));
+        layout.addView(nameInput);
+
+        TextView typeLabel = new TextView(getContext());
+        typeLabel.setText("Category Type");
+        typeLabel.setTextColor(getResources().getColor(R.color.color_on_surface, null));
+        typeLabel.setPadding(0, 32, 0, 8);
+        layout.addView(typeLabel);
+
+        RadioGroup typeGroup = new RadioGroup(getContext());
+        typeGroup.setOrientation(RadioGroup.HORIZONTAL);
+
+        RadioButton expenseRadio = new RadioButton(getContext());
+        expenseRadio.setText("Expense");
+        expenseRadio.setId(View.generateViewId());
+        expenseRadio.setTextColor(getResources().getColor(R.color.color_on_surface, null));
+        expenseRadio.setChecked("expense".equals(category.getType()));
+        typeGroup.addView(expenseRadio);
+
+        RadioButton incomeRadio = new RadioButton(getContext());
+        incomeRadio.setText("Income");
+        incomeRadio.setId(View.generateViewId());
+        incomeRadio.setTextColor(getResources().getColor(R.color.color_on_surface, null));
+        incomeRadio.setChecked("income".equals(category.getType()));
+        typeGroup.addView(incomeRadio);
+
+        layout.addView(typeGroup);
+        builder.setView(layout);
+
+        builder.setPositiveButton("Update", (dialog, which) -> {
+            String newName = nameInput.getText().toString().trim();
+            if (!newName.isEmpty()) {
+                category.setName(newName);
+                category.setType(expenseRadio.isChecked() ? "expense" : "income");
+                categoryRepository.updateCategory(category);
+                Toast.makeText(getContext(), "Category updated", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "Please enter a category name", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
     }
 
-    private void showDeleteConfirmDialog(CategoryItem category, int position) {
-        new AlertDialog.Builder(requireContext())
-            .setTitle("Delete Category")
-            .setMessage("Are you sure you want to delete '" + category.getName() + "'?")
-            .setPositiveButton("Delete", (dialog, which) -> {
-                allCategories.remove(position);
-                adapter.updateCategories(allCategories);
-                Toast.makeText(getContext(), "Category deleted", Toast.LENGTH_SHORT).show();
-            })
-            .setNegativeButton("Cancel", null)
-            .show();
-    }
-
-    public void refreshData() {
-        updateUI();
+    private void showDeleteConfirmDialog(Category category) {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Delete Category")
+                .setMessage("Are you sure you want to delete '" + category.getName() + "'?")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    categoryRepository.deleteCategory(category);
+                    Toast.makeText(getContext(), "Category deleted", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     @Override

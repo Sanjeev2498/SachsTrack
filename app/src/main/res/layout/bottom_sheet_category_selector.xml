@@ -34,167 +34,22 @@
     </LinearLayout>
 
     <!-- Category Options -->
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingHorizontal="16dp">
-
-        <!-- Food & Dining -->
+        android:maxHeight="400dp">
+        
         <LinearLayout
-            android:id="@+id/category_food"
+            android:id="@+id/layout_category_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="12dp">
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp">
 
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/bg_circle_category_icon"
-                android:padding="10dp"
-                android:src="@drawable/ic_restaurant_24"
-                android:tint="@color/color_primary" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Food &amp; Dining"
-                android:textColor="@color/color_on_surface"
-                android:textSize="16sp" />
+            <!-- Categories will be loaded dynamically -->
 
         </LinearLayout>
-
-        <!-- Transport -->
-        <LinearLayout
-            android:id="@+id/category_transport"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="12dp">
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/bg_circle_category_icon"
-                android:padding="10dp"
-                android:src="@drawable/ic_directions_car_24"
-                android:tint="@color/color_primary" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Transport"
-                android:textColor="@color/color_on_surface"
-                android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <!-- Housing -->
-        <LinearLayout
-            android:id="@+id/category_housing"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="12dp">
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/bg_circle_category_icon"
-                android:padding="10dp"
-                android:src="@drawable/ic_home_24"
-                android:tint="@color/color_primary" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Housing"
-                android:textColor="@color/color_on_surface"
-                android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <!-- Shopping -->
-        <LinearLayout
-            android:id="@+id/category_shopping"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="12dp">
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/bg_circle_category_icon"
-                android:padding="10dp"
-                android:src="@drawable/ic_shopping_bag_24"
-                android:tint="@color/color_primary" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Shopping"
-                android:textColor="@color/color_on_surface"
-                android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <!-- Entertainment -->
-        <LinearLayout
-            android:id="@+id/category_entertainment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="12dp">
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/bg_circle_category_icon"
-                android:padding="10dp"
-                android:src="@drawable/ic_movie_24"
-                android:tint="@color/color_primary" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Entertainment"
-                android:textColor="@color/color_on_surface"
-                android:textSize="16sp" />
-
-        </LinearLayout>
-
-    </LinearLayout>
+        
+    </ScrollView>
 
 </LinearLayout>

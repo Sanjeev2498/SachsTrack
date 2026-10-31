@@ -1,155 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@color/color_background">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Categories"
-        android:textSize="24sp"
-        android:textColor="@color/color_on_surface"
-        android:textStyle="bold" />
-
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/search_view"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/bg_search"
-        app:iconifiedByDefault="false"
-        app:queryHint="Search categories..."
-        app:searchIcon="@drawable/ic_search_24"
-        app:closeIcon="@drawable/ic_clear_24" />
+        android:layout_height="match_parent"
+        android:background="@color/color_background"
+        android:paddingBottom="80dp">
 
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chip_group_filter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        app:singleSelection="true">
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_all"
-            style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="All"
-            android:checked="true" />
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_expense"
-            style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Expenses" />
+            <!-- Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingVertical="8dp"
+                android:layout_marginBottom="16dp">
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_income"
-            style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Income" />
+                <ImageButton
+                    android:id="@+id/btn_menu"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Menu"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_menu_24"
+                    android:tint="@color/color_primary" />
 
-    </com.google.android.material.chip.ChipGroup>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/tv_total_expense"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Total Expense: ₹0.00"
-        android:textSize="16sp"
-        android:textColor="@color/color_expense" />
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_account_balance_wallet_24"
+                        android:tint="@color/color_primary" />
 
-    <TextView
-        android:id="@+id/tv_total_income"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Total Income: ₹0.00"
-        android:textSize="16sp"
-        android:textColor="@color/color_income" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SachsTrack"
+                        android:textColor="@color/color_on_surface"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/tv_total_categories_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="0"
-        android:textSize="20sp"
-        android:textColor="@color/color_primary"
-        android:textStyle="bold" />
+                </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_active_categories_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="0"
-        android:textSize="20sp"
-        android:textColor="@color/color_income"
-        android:textStyle="bold" />
+                <!-- Empty space for symmetry -->
+                <View
+                    android:layout_width="48dp"
+                    android:layout_height="48dp" />
 
-    <TextView
-        android:id="@+id/tv_unused_categories_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="0"
-        android:textSize="20sp"
-        android:textColor="@color/color_expense"
-        android:textStyle="bold" />
+            </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_most_used_category"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Most used category"
-        android:textSize="14sp"
-        android:textColor="@color/color_on_surface" />
+            <!-- Summary Cards -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="@color/color_surface_container"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
 
-    <TextView
-        android:id="@+id/tv_most_used_category_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="0 transactions"
-        android:textSize="12sp"
-        android:textColor="@color/color_primary" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_top_categories"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp" />
+                    <!-- All Accounts Total -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ALL ACCOUNTS"
+                        android:textColor="@color/color_on_surface_variant"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.05" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_income_categories"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="16dp" />
+                    <TextView
+                        android:id="@+id/tv_all_accounts_total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="₹0.00"
+                        android:textColor="@color/color_on_surface"
+                        android:textSize="32sp"
+                        android:textStyle="bold" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_expense_categories"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="16dp" />
+                </LinearLayout>
 
+            </androidx.cardview.widget.CardView>
+
+            <!-- Filter Chips -->
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_all"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="All"
+                    android:checked="true" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_expense"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Expenses" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_income"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Income" />
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- Categories List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_categories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- Floating Action Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="16dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="100dp"
         android:contentDescription="Add Category"
+        android:src="@drawable/ic_add_24"
         app:backgroundTint="@color/color_primary"
-        app:srcCompat="@drawable/ic_add_24"
         app:tint="@color/color_on_primary" />
 
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

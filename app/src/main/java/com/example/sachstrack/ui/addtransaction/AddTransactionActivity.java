@@ -596,34 +596,98 @@ public class AddTransactionActivity extends AppCompatActivity {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         View bottomSheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_category_selector, null);
         
-        // TODO: Implement category selection logic based on transaction type
-        bottomSheetView.findViewById(R.id.category_food).setOnClickListener(v -> {
-            binding.tvSelectedCategory.setText("Food & Dining");
-            bottomSheetDialog.dismiss();
-        });
+        // Get the container layout
+        LinearLayout layout = bottomSheetView.findViewById(R.id.layout_category_list);
+        layout.removeAllViews(); // Clear any existing views
         
-        bottomSheetView.findViewById(R.id.category_transport).setOnClickListener(v -> {
-            binding.tvSelectedCategory.setText("Transport");
-            bottomSheetDialog.dismiss();
-        });
-        
-        bottomSheetView.findViewById(R.id.category_housing).setOnClickListener(v -> {
-            binding.tvSelectedCategory.setText("Housing");
-            bottomSheetDialog.dismiss();
-        });
-        
-        bottomSheetView.findViewById(R.id.category_shopping).setOnClickListener(v -> {
-            binding.tvSelectedCategory.setText("Shopping");
-            bottomSheetDialog.dismiss();
-        });
-        
-        bottomSheetView.findViewById(R.id.category_entertainment).setOnClickListener(v -> {
-            binding.tvSelectedCategory.setText("Entertainment");
-            bottomSheetDialog.dismiss();
+        // Load categories from database dynamically
+        viewModel.getCategoriesByType(selectedTransactionType).observe(this, categories -> {
+            if (categories != null && !categories.isEmpty()) {
+                for (com.example.sachstrack.database.entities.Category category : categories) {
+                    // Create category item
+                    View item = getLayoutInflater().inflate(R.layout.item_category, null);
+                    
+                    // Set icon
+                    android.widget.ImageView icon = item.findViewById(R.id.iv_category_icon);
+                    String iconName = category.getIcon() != null ? category.getIcon() : "restaurant";
+                    int iconRes = getIconResource(iconName);
+                    icon.setImageResource(iconRes);
+                    
+                    // Set category name
+                    TextView name = item.findViewById(R.id.tv_category_name);
+                    name.setText(category.getName());
+                    
+                    // Set type
+                    TextView type = item.findViewById(R.id.tv_category_type);
+                    type.setText(category.getType().toUpperCase());
+                    
+                    // Set click listener
+                    item.setOnClickListener(v -> {
+                        binding.tvSelectedCategory.setText(category.getName());
+                        bottomSheetDialog.dismiss();
+                    });
+                    
+                    layout.addView(item);
+                }
+            } else {
+                TextView empty = new TextView(this);
+                empty.setText("No categories found\nAdd categories first");
+                empty.setTextColor(0xFFAAAAAA);
+                empty.setGravity(android.view.Gravity.CENTER);
+                empty.setPadding(16, 32, 16, 32);
+                layout.addView(empty);
+            }
         });
         
         bottomSheetDialog.setContentView(bottomSheetView);
         bottomSheetDialog.show();
+    }
+    
+    private int getIconResource(String iconName) {
+        // Map icon names to drawable resources
+        switch (iconName.toLowerCase()) {
+            case "restaurant":
+            case "food":
+                return R.drawable.ic_restaurant_24;
+            case "directions_car":
+            case "transport":
+                return R.drawable.ic_directions_car_24;
+            case "home":
+            case "housing":
+                return R.drawable.ic_home_24;
+            case "shopping_bag":
+            case "shopping":
+                return R.drawable.ic_shopping_bag_24;
+            case "movie":
+            case "entertainment":
+                return R.drawable.ic_movie_24;
+            case "school":
+            case "education":
+                return R.drawable.ic_receipt_24; // Use receipt as fallback
+            case "bills":
+            case "receipt":
+                return R.drawable.ic_receipt_24;
+            case "smartphone":
+            case "phone":
+                return R.drawable.ic_smartphone_24;
+            case "beauty":
+                return R.drawable.ic_receipt_24; // Use receipt as fallback
+            case "work":
+                return R.drawable.ic_work_24;
+            case "business":
+                return R.drawable.ic_business_24;
+            case "trending_up":
+            case "investment":
+                return R.drawable.ic_trending_up_24;
+            case "bonus":
+            case "payments":
+                return R.drawable.ic_payments_24;
+            case "freelance":
+            case "paid":
+                return R.drawable.ic_payments_24; // Use payments as fallback
+            default:
+                return R.drawable.ic_receipt_24;
+        }
     }
     
     private void setupNoteInput() {

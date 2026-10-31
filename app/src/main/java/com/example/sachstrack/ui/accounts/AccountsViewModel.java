@@ -19,6 +19,7 @@ public class AccountsViewModel extends AndroidViewModel {
     
     // LiveData for UI observation
     private LiveData<List<Account>> allActiveAccounts;
+    private LiveData<List<com.example.sachstrack.database.entities.Transaction>> allTransactions;
     private LiveData<Double> totalBalance;
     private LiveData<Double> totalIncome;
     private LiveData<Double> totalExpenses;
@@ -31,6 +32,7 @@ public class AccountsViewModel extends AndroidViewModel {
         
         // Initialize LiveData
         allActiveAccounts = accountRepository.getAllActiveAccounts();
+        allTransactions = transactionRepository.getAllTransactions();
         totalBalance = accountRepository.getTotalBalance();
         totalIncome = transactionRepository.getTotalIncome();
         totalExpenses = transactionRepository.getTotalExpenses();
@@ -60,6 +62,10 @@ public class AccountsViewModel extends AndroidViewModel {
     // Getters for UI observation
     public LiveData<List<Account>> getAllActiveAccounts() {
         return allActiveAccounts;
+    }
+    
+    public LiveData<List<com.example.sachstrack.database.entities.Transaction>> getAllTransactions() {
+        return allTransactions;
     }
     
     public LiveData<Double> getTotalBalance() {

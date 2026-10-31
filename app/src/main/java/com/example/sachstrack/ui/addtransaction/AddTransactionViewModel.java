@@ -8,8 +8,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.sachstrack.database.entities.Account;
+import com.example.sachstrack.database.entities.Category;
 import com.example.sachstrack.database.entities.Transaction;
 import com.example.sachstrack.repository.AccountRepository;
+import com.example.sachstrack.repository.CategoryRepository;
 import com.example.sachstrack.repository.TransactionRepository;
 import com.example.sachstrack.utils.Constants;
 import com.example.sachstrack.utils.DateUtils;
@@ -20,6 +22,7 @@ public class AddTransactionViewModel extends AndroidViewModel {
     
     private TransactionRepository transactionRepository;
     private AccountRepository accountRepository;
+    private CategoryRepository categoryRepository;
     
     // Calculator logic
     private CalculatorLogic calculatorLogic = new CalculatorLogic();
@@ -46,6 +49,7 @@ public class AddTransactionViewModel extends AndroidViewModel {
         
         transactionRepository = new TransactionRepository(application);
         accountRepository = new AccountRepository(application);
+        categoryRepository = new CategoryRepository(application);
         
         // Initialize data sources
         allAccounts = accountRepository.getAllActiveAccounts();
@@ -219,6 +223,16 @@ public class AddTransactionViewModel extends AndroidViewModel {
     
     public LiveData<List<Account>> getAllAccounts() {
         return allAccounts;
+    }
+    
+    public LiveData<List<Category>> getCategoriesByType(String type) {
+        if ("expense".equalsIgnoreCase(type)) {
+            return categoryRepository.getExpenseCategories();
+        } else if ("income".equalsIgnoreCase(type)) {
+            return categoryRepository.getIncomeCategories();
+        } else {
+            return categoryRepository.getAllActiveCategories();
+        }
     }
     
     // Utility methods
