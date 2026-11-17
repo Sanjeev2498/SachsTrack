@@ -203,29 +203,96 @@ public class BudgetsFragment extends Fragment {
     private void saveBudgets(List<Category> categories, Map<Integer, EditText> budgetInputs) {
         int month = currentCalendar.get(Calendar.MONTH) + 1;
         int year = currentCalendar.get(Calendar.YEAR);
-        int savedCount = 0;
         
-        for (Category category : categories) {
-            EditText input = budgetInputs.get(category.getId());
-            if (input != null && !input.getText().toString().trim().isEmpty()) {
-                try {
-                    double amount = Double.parseDouble(input.getText().toString().trim());
-                    if (amount > 0) {
-                        Budget budget = new Budget(category.getId(), category.getName(), amount, month, year);
-                        budgetRepository.insertBudget(budget);
-                        savedCount++;
+        // Use background thread for database operations
+        new Thread(() -> {
+            int savedCount = 0;
+            
+            for (Category category : categories) {
+                EditText input = budgetInputs.get(category.getId());
+                if (input != null && !input.getText().toString().trim().isEmpty()) {
+                    try {
+                        double amount = Double.parseDouble(input.getText().toString().trim());
+                        if (amount > 0) {
+                            // Calculate spent from existing transactions BEFORE creating budget
+                            double spentAmount = calculateSpentForCategory(category.getName(), month, year);
+                            
+                            Budget budget = new Budget(category.getId(), category.getName(), amount, month, year);
+                            budget.setSpent(spentAmount);
+                            
+                            budgetRepository.insertBudgetSync(budget);
+                            savedCount++;
+                            
+                            Log.d(TAG, "Budget saved for " + category.getName() + 
+                                  " - Amount: ₹" + amount + ", Spent: ₹" + spentAmount);
+                        }
+                    } catch (NumberFormatException e) {
+                        Log.e(TAG, "Invalid budget amount for " + category.getName());
                     }
-                } catch (NumberFormatException e) {
-                    Log.e(TAG, "Invalid budget amount for " + category.getName());
                 }
             }
-        }
-        
-        if (savedCount > 0) {
-            Toast.makeText(getContext(), savedCount + " budgets saved", Toast.LENGTH_SHORT).show();
-            loadBudgetData();
-        } else {
-            Toast.makeText(getContext(), "No budgets entered", Toast.LENGTH_SHORT).show();
+            
+            final int finalCount = savedCount;
+            // Update UI on main thread
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() -> {
+                    if (finalCount > 0) {
+                        Toast.makeText(getContext(), finalCount + " budgets saved", Toast.LENGTH_SHORT).show();
+                        loadBudgetData();
+                    } else {
+                        Toast.makeText(getContext(), "No budgets entered", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }).start();
+    }
+    
+    /**
+     * Calculate spent amount synchronously from database
+     */
+    private double calculateSpentForCategory(String categoryName, int month, int year) {
+        try {
+            com.example.sachstrack.database.AppDatabase database = 
+                com.example.sachstrack.database.AppDatabase.getDatabase(requireActivity().getApplicationContext());
+            
+            // Get all transactions synchronously
+            List<com.example.sachstrack.database.entities.Transaction> allTransactions = 
+                database.transactionDao().getAllTransactionsSync();
+            
+            double totalSpent = 0.0;
+            
+            if (allTransactions != null) {
+                for (com.example.sachstrack.database.entities.Transaction transaction : allTransactions) {
+                    if (transaction != null && 
+                        "expense".equals(transaction.getType()) &&
+                        categoryName.equals(transaction.getCategory()) &&
+                        transaction.getDate() != null) {
+                        
+                        // Parse transaction date (format: YYYY-MM-DD)
+                        try {
+                            String[] dateParts = transaction.getDate().split("-");
+                            if (dateParts.length >= 2) {
+                                int transYear = Integer.parseInt(dateParts[0]);
+                                int transMonth = Integer.parseInt(dateParts[1]);
+                                
+                                // Check if transaction is in the same month/year as budget
+                                if (transYear == year && transMonth == month) {
+                                    totalSpent += transaction.getAmount();
+                                }
+                            }
+                        } catch (Exception e) {
+                            Log.w(TAG, "Error parsing transaction date: " + transaction.getDate());
+                        }
+                    }
+                }
+            }
+            
+            Log.d(TAG, "Calculated spent for " + categoryName + " (" + month + "/" + year + "): ₹" + totalSpent);
+            return totalSpent;
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Error calculating spent amount: " + e.getMessage(), e);
+            return 0.0;
         }
     }
     

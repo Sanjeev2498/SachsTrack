@@ -27,6 +27,10 @@ public class BudgetRepository {
     public void insertBudget(Budget budget) {
         executor.execute(() -> budgetDao.insertBudget(budget));
     }
+    
+    public void insertBudgetSync(Budget budget) {
+        budgetDao.insertBudget(budget);
+    }
 
     public void insertBudgets(Budget... budgets) {
         executor.execute(() -> budgetDao.insertBudgets(budgets));
